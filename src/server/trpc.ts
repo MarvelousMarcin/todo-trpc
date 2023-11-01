@@ -1,4 +1,5 @@
-import { initTRPC } from "@trpc/server";
+import { auth } from "@clerk/nextjs";
+import { TRPCError, initTRPC } from "@trpc/server";
 import { ZodError } from "zod";
 
 const t = initTRPC.create({
@@ -17,5 +18,23 @@ const t = initTRPC.create({
   },
 });
 
+export const middleware = t.middleware;
 export const router = t.router;
 export const publicProcedure = t.procedure;
+
+const isAuth = middleware(async (opts) => {
+  const { userId } = auth();
+  if (!userId)
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You have to be sign in",
+    });
+
+  return opts.next({
+    ctx: {
+      userId,
+    },
+  });
+});
+
+export const privatePrcedure = publicProcedure.use(isAuth);

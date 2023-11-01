@@ -1,12 +1,12 @@
 import { auth } from "@clerk/nextjs";
-import { publicProcedure, router } from "./trpc";
+import { privatePrcedure, publicProcedure, router } from "./trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Priority } from "@prisma/client";
 import prisma from "../../prisma/client";
 
 export const appRouter = router({
-  addTodo: publicProcedure
+  addTodo: privatePrcedure
     .input(
       z.object({
         isDone: z.boolean(),
@@ -15,14 +15,8 @@ export const appRouter = router({
         priority: z.nativeEnum(Priority),
       })
     )
-    .mutation(async ({ input }) => {
-      const { userId } = auth();
-
-      if (!userId)
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You have to be sign in",
-        });
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.userId;
 
       const todoItem = await prisma.toDo.create({
         data: {
@@ -36,6 +30,7 @@ export const appRouter = router({
 
       return todoItem;
     }),
+  getTodos: publicProcedure.query(async () => {}),
 });
 
 export type AppRouter = typeof appRouter;
