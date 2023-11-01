@@ -25,29 +25,54 @@ import { AlertOctagon, Check, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Priority } from "@prisma/client";
+import { client } from "@/app/_trpc/client";
+import { useToast } from "@/components/ui/use-toast";
+import { Card } from "../ui/card";
 
 type ToDoInput = {
   title: string;
   priority: Priority;
-  date: Date | undefined;
+  deadline: Date | undefined;
   isDone: boolean;
+};
+
+let defaultInput = {
+  title: "",
+  priority: Priority.LOW,
+  deadline: undefined,
+  isDone: false,
 };
 
 const AddToDoInput = ({}) => {
   const { isAdding, setIsAdd } = useAdd();
+  const { toast } = useToast();
+
+  const addTodo = client.addTodo.useMutation({
+    onError: (err) => {
+      if (err.data?.zodError?.fieldErrors.title) {
+        toast({
+          title: err.data?.zodError?.fieldErrors?.title[0] + "  😉",
+          description: "There was some problem with your todo",
+        });
+      }
+    },
+    onSuccess: () => {
+      setTodo(defaultInput);
+      setIsAdd(false);
+    },
+  });
 
   useEffect(() => {
     return () => setIsAdd(false);
   }, [setIsAdd]);
 
-  const [todo, setTodo] = useState<ToDoInput>({
-    title: "",
-    priority: "LOW",
-    date: new Date(),
-    isDone: false,
-  });
+  const [todo, setTodo] = useState<ToDoInput>(defaultInput);
 
   if (!isAdding) return <></>;
+
+  const handleAddTodo = () => {
+    addTodo.mutate(todo);
+  };
 
   return (
     <div className="flex items-center gap-6">
@@ -56,6 +81,7 @@ const AddToDoInput = ({}) => {
       />
       <div>
         <Input
+          maxLength={20}
           value={todo.title}
           onChange={(e) => setTodo({ ...todo, title: e.target.value })}
           className="w-40 pl-2 border-none"
@@ -63,7 +89,16 @@ const AddToDoInput = ({}) => {
         />
       </div>
       <div className="flex items-center justify-center">
-        <AlertOctagon className="mr-2 h-4 w-4" />
+        <AlertOctagon
+          className={cn(
+            "mr-2 h-4 w-4",
+            todo.priority === "LOW"
+              ? "text-green-700"
+              : todo.priority === "MEDIUM"
+              ? "text-yellow-600"
+              : "text-red-500"
+          )}
+        />
 
         <Select
           onValueChange={(value: Priority) =>
@@ -89,19 +124,23 @@ const AddToDoInput = ({}) => {
           <Button
             variant={"outline"}
             className={cn(
-              "w-[130px] justify-start text-left font-normal border-none",
-              !todo.date && "text-muted-foreground"
+              "w-[140px] justify-start text-left font-normal border-none",
+              !todo.deadline && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {todo.date ? format(todo.date, "PP") : <span>Pick a date</span>}
+            {todo.deadline ? (
+              format(todo.deadline, "PP")
+            ) : (
+              <span>Pick a deadline</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
           <Calendar
             mode="single"
-            selected={todo.date}
-            onSelect={(value) => setTodo({ ...todo, date: value })}
+            selected={todo.deadline}
+            onSelect={(value) => setTodo({ ...todo, deadline: value })}
             initialFocus
           />
         </PopoverContent>
@@ -109,12 +148,12 @@ const AddToDoInput = ({}) => {
 
       <div className="flex gap-3">
         <Check
-          className="cursor-pointer"
+          className="cursor-pointer text-green-700"
           size={15}
-          onClick={() => console.log(todo)}
+          onClick={handleAddTodo}
         />
         <X
-          className="cursor-pointer"
+          className="cursor-pointer text-red-500"
           size={15}
           onClick={() => setIsAdd(false)}
         />
