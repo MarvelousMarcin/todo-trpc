@@ -2,14 +2,18 @@
 
 import { useAdd } from "@/store/isAddStore";
 import { BadgePlus } from "lucide-react";
-
+import { motion } from "framer-motion";
 const AddToDoBtn = ({}) => {
   const { isAdding, setIsAdd } = useAdd();
 
   return (
-    <button onClick={() => setIsAdd(true)} className="w-fit cursor-pointer">
+    <motion.button
+      animate={{ scale: isAdding ? 0 : 1 }}
+      onClick={() => setIsAdd(true)}
+      className="w-fit cursor-pointer"
+    >
       <BadgePlus className="text-red-500" />
-    </button>
+    </motion.button>
   );
 };
 

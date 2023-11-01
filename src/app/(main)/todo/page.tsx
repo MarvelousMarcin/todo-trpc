@@ -1,4 +1,5 @@
 import AddToDoBtn from "@/components/todos/AddToDoBtn";
+import AddToDoInput from "@/components/todos/AddToDoInput";
 
 const Home = ({}) => {
   return (
@@ -7,7 +8,9 @@ const Home = ({}) => {
         <div>Your todos</div>
         <AddToDoBtn />
       </h1>
-      <main></main>
+      <main className="mt-10">
+        <AddToDoInput />
+      </main>
     </div>
   );
 };
