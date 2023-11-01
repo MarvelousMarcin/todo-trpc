@@ -10,19 +10,18 @@ interface ToDoListClientProps {
 }
 
 const ToDoListClient: FC<ToDoListClientProps> = ({ initialTodos }) => {
-  // const todosQuery = client.getTodos.useQuery(undefined, {
-  //   refetchOnMount: false,
-  //   refetchOnReconnect: false,
-  //   initialData: initialTodos,
-  // });
+  const todosQuery = client.getTodos.useQuery(undefined, {
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    initialData: initialTodos,
+  });
 
-  // if (todosQuery.isLoading) return <div>Is Loading...</div>;
+  if (todosQuery.isLoading) return <div>Is Loading...</div>;
 
-  // const todos = todosQuery.data;
-
+  const todos = todosQuery.data;
   return (
     <div className="w-[35rem] h-full flex-col">
-      {initialTodos?.map((todo) => (
+      {todos?.map((todo) => (
         <ToDo key={todo.id} todo={todo} />
       ))}
     </div>

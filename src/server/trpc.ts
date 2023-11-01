@@ -1,8 +1,10 @@
 import { auth } from "@clerk/nextjs";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { ZodError } from "zod";
-
+import superjson from "superjson";
 const t = initTRPC.create({
+  transformer: superjson,
+
   errorFormatter(opts) {
     const { shape, error } = opts;
     return {
