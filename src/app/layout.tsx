@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Provider from "./_trpc/Provider";
-
-const inter = Inter({ subsets: ["latin"] });
+import { GeistSans } from "geist/font";
 
 export const metadata: Metadata = {
   title: "ToDo",
@@ -19,7 +17,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className}>
+        <body className={GeistSans.className}>
           <Provider>{children}</Provider>
         </body>
       </html>
