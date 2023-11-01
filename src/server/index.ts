@@ -1,6 +1,5 @@
-import { auth } from "@clerk/nextjs";
 import { privatePrcedure, publicProcedure, router } from "./trpc";
-import { TRPCError } from "@trpc/server";
+import superjson from "superjson";
 import { z } from "zod";
 import { Priority } from "@prisma/client";
 import prisma from "../../prisma/client";
@@ -30,7 +29,17 @@ export const appRouter = router({
 
       return todoItem;
     }),
-  getTodos: publicProcedure.query(async () => {}),
+  getTodos: privatePrcedure.query(async ({ ctx }) => {
+    const userId = ctx.userId;
+
+    const items = await prisma.toDo.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    return items;
+  }),
 });
 
 export type AppRouter = typeof appRouter;
