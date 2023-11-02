@@ -5,6 +5,7 @@ import { serverClient } from "@/app/_trpc/server";
 import { FC } from "react";
 import ToDo from "./ToDo";
 import AddToDoInput from "./AddToDoInput";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface ToDoListClientProps {
   initialTodos: Awaited<ReturnType<(typeof serverClient)["getTodos"]>>;
@@ -21,13 +22,13 @@ const ToDoListClient: FC<ToDoListClientProps> = ({ initialTodos }) => {
 
   const todos = todosQuery.data;
   return (
-    <div className="max-w-[40rem] w-full h-full flex-col">
+    <ScrollArea className="w-full h-full flex-col pr-6">
       <AddToDoInput />
 
       {todos?.map((todo) => (
         <ToDo key={todo.id} todo={todo} />
       ))}
-    </div>
+    </ScrollArea>
   );
 };
 

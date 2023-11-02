@@ -14,7 +14,8 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Check, Trash } from "lucide-react";
+import { CalendarIcon, Check, Trash } from "lucide-react";
+import { format } from "date-fns";
 
 interface ToDoProps {
   todo: ToDo;
@@ -41,6 +42,15 @@ const ToDo: FC<ToDoProps> = ({ todo }) => {
     setIsDone(!isDone);
   };
 
+  const handleDelete = () => {
+    deleteTodo({ todoId: todo.id });
+    utils.getTodos.setData(undefined, (prevData: ToDo[] | undefined) => {
+      if (!prevData) return prevData;
+
+      return prevData.filter((item) => item.id !== todo.id);
+    });
+  };
+
   const priority =
     todo.priority === "LOW"
       ? "Low"
@@ -61,15 +71,21 @@ const ToDo: FC<ToDoProps> = ({ todo }) => {
               {todo.title}
             </h1>
           </section>
-          <Badge
-            className={cn(
-              "bg-green-400 hover:bg-green-400",
-              priority === "Medium" && "bg-orange-300 hover:bg-orange-300",
-              priority === "High" && "bg-red-400 hover:bg-red-400"
-            )}
-          >
-            {priority}
-          </Badge>
+          <section className="flex gap-5 justify-end">
+            <div className="flex items-center ">
+              {todo.deadline && <CalendarIcon className="mr-2 h-4 w-4" />}
+              {todo.deadline && format(todo.deadline, "PP")}
+            </div>
+            <Badge
+              className={cn(
+                "bg-green-400 hover:bg-green-400 min-w-[4.5rem] justify-center",
+                priority === "Medium" && "bg-orange-300 hover:bg-orange-300",
+                priority === "High" && "bg-red-400 hover:bg-red-400"
+              )}
+            >
+              {priority}
+            </Badge>
+          </section>
         </Card>
       </ContextMenuTrigger>
       <ContextMenuContent>
@@ -77,10 +93,7 @@ const ToDo: FC<ToDoProps> = ({ todo }) => {
           <Check size={18} />
           {isDone ? "Uncheck" : "Check"}
         </ContextMenuItem>
-        <ContextMenuItem
-          className="flex gap-1"
-          onClick={() => deleteTodo({ todoId: todo.id })}
-        >
+        <ContextMenuItem className="flex gap-1" onClick={handleDelete}>
           <Trash size={18} />
           Delete
         </ContextMenuItem>

@@ -77,7 +77,7 @@ const AddToDoInput = ({}) => {
   };
 
   return (
-    <Card className="flex items-center justify-between px-3 py-1 mt-3 w-full">
+    <Card className="flex items-center gap-9 px-3 py-1 mt-3 w-full">
       <Checkbox
         onCheckedChange={(check) => setTodo({ ...todo, isDone: !!check })}
       />
