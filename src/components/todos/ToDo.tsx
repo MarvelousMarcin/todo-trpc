@@ -14,6 +14,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { Check, Trash } from "lucide-react";
 
 interface ToDoProps {
   todo: ToDo;
@@ -62,7 +63,7 @@ const ToDo: FC<ToDoProps> = ({ todo }) => {
           </section>
           <Badge
             className={cn(
-              "bg-green-300 hover:bg-green-300",
+              "bg-green-400 hover:bg-green-400",
               priority === "Medium" && "bg-orange-300 hover:bg-orange-300",
               priority === "High" && "bg-red-400 hover:bg-red-400"
             )}
@@ -72,7 +73,15 @@ const ToDo: FC<ToDoProps> = ({ todo }) => {
         </Card>
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <ContextMenuItem onClick={() => deleteTodo({ todoId: todo.id })}>
+        <ContextMenuItem className="flex gap-1" onClick={handleTodoClick}>
+          <Check size={18} />
+          {isDone ? "Uncheck" : "Check"}
+        </ContextMenuItem>
+        <ContextMenuItem
+          className="flex gap-1"
+          onClick={() => deleteTodo({ todoId: todo.id })}
+        >
+          <Trash size={18} />
           Delete
         </ContextMenuItem>
       </ContextMenuContent>

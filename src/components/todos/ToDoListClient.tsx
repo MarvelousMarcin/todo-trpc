@@ -21,7 +21,7 @@ const ToDoListClient: FC<ToDoListClientProps> = ({ initialTodos }) => {
 
   const todos = todosQuery.data;
   return (
-    <div className="w-[35rem] h-full flex-col">
+    <div className="max-w-[40rem] w-full h-full flex-col">
       <AddToDoInput />
 
       {todos?.map((todo) => (

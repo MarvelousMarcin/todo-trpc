@@ -6,8 +6,8 @@ import SignOutBtn from "@/components/menu/SignOutBtn";
 const layout = ({ children }: PropsWithChildren) => {
   return (
     <div className="flex">
-      <nav className="h-screen w-32  items-center flex justify-between py-10 flex-col ">
-        <div className="flex flex-col items-center">
+      <nav className="hidden md:flex h-screen w-32  items-center flex justify-between py-10 flex-col ">
+        <div className="flex-col items-center">
           <Logo />
           <Menu />
         </div>
