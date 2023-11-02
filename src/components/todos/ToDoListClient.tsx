@@ -4,6 +4,7 @@ import { client } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/server";
 import { FC } from "react";
 import ToDo from "./ToDo";
+import AddToDoInput from "./AddToDoInput";
 
 interface ToDoListClientProps {
   initialTodos: Awaited<ReturnType<(typeof serverClient)["getTodos"]>>;
@@ -21,6 +22,8 @@ const ToDoListClient: FC<ToDoListClientProps> = ({ initialTodos }) => {
   const todos = todosQuery.data;
   return (
     <div className="w-[35rem] h-full flex-col">
+      <AddToDoInput />
+
       {todos?.map((todo) => (
         <ToDo key={todo.id} todo={todo} />
       ))}

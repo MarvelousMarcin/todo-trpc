@@ -10,7 +10,6 @@ const Home = ({}) => {
         <AddToDoBtn />
       </h1>
       <main className="mt-10 h-full">
-        <AddToDoInput />
         <ToDoList />
       </main>
     </div>

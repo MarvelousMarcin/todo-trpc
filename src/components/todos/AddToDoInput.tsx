@@ -77,7 +77,7 @@ const AddToDoInput = ({}) => {
   };
 
   return (
-    <div className="flex items-center gap-6">
+    <Card className="flex items-center justify-between px-3 py-1 mt-3 w-[35rem]">
       <Checkbox
         onCheckedChange={(check) => setTodo({ ...todo, isDone: !!check })}
       />
@@ -160,7 +160,7 @@ const AddToDoInput = ({}) => {
           onClick={() => setIsAdd(false)}
         />
       </div>
-    </div>
+    </Card>
   );
 };
 

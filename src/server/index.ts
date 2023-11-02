@@ -67,6 +67,28 @@ export const appRouter = router({
       });
       return updateTodo;
     }),
+  deleteTodo: privatePrcedure
+    .input(z.object({ todoId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.userId;
+      const { todoId } = input;
+
+      const findTodo = await prisma.toDo.findUnique({
+        where: { id: todoId },
+      });
+
+      if (findTodo?.userId !== userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You have not permission to touch this todo",
+        });
+      }
+
+      const updateTodo = await prisma.toDo.delete({
+        where: { id: todoId },
+      });
+      return updateTodo;
+    }),
 });
 
 export type AppRouter = typeof appRouter;

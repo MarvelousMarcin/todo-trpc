@@ -8,6 +8,13 @@ import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
 import { client } from "@/app/_trpc/client";
 
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+
 interface ToDoProps {
   todo: ToDo;
 }
@@ -15,14 +22,21 @@ interface ToDoProps {
 const ToDo: FC<ToDoProps> = ({ todo }) => {
   const [isDone, setIsDone] = useState(todo.isDone);
   const utils = client.useUtils();
-  const mutation = client.setTodoDone.useMutation({
-    onSuccess: (data) => {
+
+  const { mutate: setDone } = client.setTodoDone.useMutation({
+    onSuccess: () => {
+      utils.getTodos.invalidate();
+    },
+  });
+
+  const { mutate: deleteTodo } = client.deleteTodo.useMutation({
+    onSuccess: () => {
       utils.getTodos.invalidate();
     },
   });
 
   const handleTodoClick = () => {
-    mutation.mutate({ isDone: !isDone, todoId: todo.id });
+    setDone({ isDone: !isDone, todoId: todo.id });
     setIsDone(!isDone);
   };
 
@@ -34,26 +48,35 @@ const ToDo: FC<ToDoProps> = ({ todo }) => {
       : "High";
 
   return (
-    <Card
-      onClick={handleTodoClick}
-      className="flex items-center justify-between gap-6 p-3 mt-3 hover:bg-accent cursor-pointer"
-    >
-      <section className="flex items-center gap-6 ">
-        <Checkbox checked={isDone} />
-        <h1 className={cn(isDone && "line-through text-gray-400")}>
-          {todo.title}
-        </h1>
-      </section>
-      <Badge
-        className={cn(
-          "bg-green-300 hover:bg-green-300",
-          priority === "Medium" && "bg-orange-300 hover:bg-orange-300",
-          priority === "High" && "bg-red-400 hover:bg-red-400"
-        )}
-      >
-        {priority}
-      </Badge>
-    </Card>
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <Card
+          onClick={handleTodoClick}
+          className="flex items-center justify-between gap-6 p-3 mt-3 hover:bg-accent cursor-pointer"
+        >
+          <section className="flex items-center gap-6 ">
+            <Checkbox checked={isDone} />
+            <h1 className={cn(isDone && "line-through text-gray-400")}>
+              {todo.title}
+            </h1>
+          </section>
+          <Badge
+            className={cn(
+              "bg-green-300 hover:bg-green-300",
+              priority === "Medium" && "bg-orange-300 hover:bg-orange-300",
+              priority === "High" && "bg-red-400 hover:bg-red-400"
+            )}
+          >
+            {priority}
+          </Badge>
+        </Card>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem onClick={() => deleteTodo({ todoId: todo.id })}>
+          Delete
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };
 
