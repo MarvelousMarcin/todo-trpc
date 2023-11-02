@@ -36,6 +36,9 @@ export const appRouter = router({
       where: {
         userId,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return items;
