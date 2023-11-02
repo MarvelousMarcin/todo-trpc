@@ -1,8 +1,8 @@
-import { privatePrcedure, publicProcedure, router } from "./trpc";
-import superjson from "superjson";
+import { privatePrcedure, router } from "./trpc";
 import { z } from "zod";
 import { Priority } from "@prisma/client";
 import prisma from "../../prisma/client";
+import { TRPCError } from "@trpc/server";
 
 export const appRouter = router({
   addTodo: privatePrcedure
@@ -40,6 +40,30 @@ export const appRouter = router({
 
     return items;
   }),
+  setTodoDone: privatePrcedure
+    .input(z.object({ todoId: z.string(), isDone: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.userId;
+      const { isDone, todoId } = input;
+
+      const findTodo = await prisma.toDo.findUnique({
+        where: { id: todoId },
+      });
+
+      if (findTodo?.userId !== userId) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "You have not permission to touch this todo",
+        });
+      }
+      const updateTodo = await prisma.toDo.update({
+        where: { id: todoId },
+        data: {
+          isDone,
+        },
+      });
+      return updateTodo;
+    }),
 });
 
 export type AppRouter = typeof appRouter;

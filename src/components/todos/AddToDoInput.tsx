@@ -46,6 +46,7 @@ let defaultInput = {
 const AddToDoInput = ({}) => {
   const { isAdding, setIsAdd } = useAdd();
   const { toast } = useToast();
+  const utils = client.useUtils();
 
   const addTodo = client.addTodo.useMutation({
     onError: (err) => {
@@ -57,6 +58,7 @@ const AddToDoInput = ({}) => {
       }
     },
     onSuccess: () => {
+      utils.getTodos.invalidate();
       setTodo(defaultInput);
       setIsAdd(false);
     },
